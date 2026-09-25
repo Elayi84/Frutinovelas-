@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FIZZY LAB</title>
+<style>
+body{font-family:Arial;background:#0a0a0f;color:#fff;padding:20px;max-width:700px;margin:auto}
+h1{color:#ff2d78;text-align:center}
+.panel{background:#14141c;border:1px solid #2a2a38;border-radius:12px;padding:15px;margin-bottom:12px}
+input,select,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #2a2a38;background:#1e1e2a;color:#fff;margin-bottom:8px;font-family:inherit;font-size:14px}
+button{background:#ff2d78;border:none;font-weight:bold;cursor:pointer;padding:12px}
+button:active{background:#a855f7}
+#log{background:#000;padding:10px;border-radius:8px;font-family:monospace;font-size:11px;max-height:200px;overflow-y:auto}
+#log div{color:#34d399;padding:2px 0}
+#log div.err{color:#f87171}
+video{width:100%;border-radius:12px;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>🧪 FIZZY LAB</h1>
+<div class="panel">
+<b>🔑 Clave API</b><br>
+<input type="password" id="clave" placeholder="sk-...">
+<button onclick="guardar()">Guardar clave</button>
+<div id="estado" style="font-size:12px;color:#888">Sin clave</div>
+</div>
+<div class="panel">
+<b>📸 Foto base (opcional)</b><br>
+<input type="file" id="foto" accept="image/*">
+<img id="prev" style="width:100%;max-height:200px;object-fit:contain;margin-top:8px;display:none">
+</div>
+<div class="panel">
+<b>🍓 Fruta</b><br>
+<select id="fruta">
+<option value="naranja">🍊 Naranja</option>
+<option value="platano">🍌 Plátano</option>
+<option value="melon">🍈 Melón</option>
+<option value="fresa">🍓 Fresa</option>
+<option value="mango">🥭 Mango</option>
+<option value="coco">🥥 Coco</option>
+</select>
+</div>
+<div class="panel">
+<b>🎬 Escena</b><br>
+<textarea id="escena" rows="3">Plano cinematográfico de una naranja humanizada llegando a un laboratorio futurista. Estilo Pixar 3D, vertical 9:16, sin texto.</textarea>
+</div>
+<button id="btn" onclick="generar()">🎬 GENERAR VIDEO</button>
+<div class="panel">
+<b>📊 Log</b>
+<div id="log"></div>
+</div>
+<div id="galeria"></div>
+
+<script>
+var API='https://apihub.agnes-ai.com/v1';
+var POLL='https://apihub.agnes-ai.com/agnesapi';
+var MODEL='agnes-video-v2.0';
+var KEY='fizzy_key';
+
+function log(m,t){var l=document.getElementById('log');var d=document.createElement('div');if(t)d.className=t;d.textContent='▸ '+m;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function getKey(){return localStorage.getItem(KEY)||'';}
+function guardar(){var k=document.getElementById('clave').value.trim();if(!k){alert('Pega tu clave');return;}localStorage.setItem(KEY,k);document.getElementById('estado').textContent='✅ Guardada';document.getElementById('estado').style.color='#34d399';log('Clave guardada');}
+
+document.getElementById('foto').onchange=function(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var c=document.createElement('canvas');
+      var s=Math.min(1,720/img.width);
+      c.width=img.width*s;c.height=img.height*s;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      window.FOTO=c.toDataURL('image/jpeg',0.8);
+      var p=document.getElementById('prev');p.src=window.FOTO;p.style.display='block';
+      log('Foto cargada');
+    };
+    img.src=ev.target.result;
+  };
+  r.readAsDataURL(f);
+};
+
+function seed(){
+  if(window.FOTO)return window.FOTO;
+  var c=document.createElement('canvas');c.width=720;c.height=1280;
+  var x=c.getContext('2d');var g=x.createLinearGradient(0,0,720,1280);
+  g.addColorStop(0,'#ff2d78');g.addColorStop(1,'#00e5ff');
+  x.fillStyle=g;x.fillRect(0,0,720,1280);
+  return c.toDataURL('image/jpeg',0.7);
+}
+
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+async function generar(){
+  var k=getKey();
+  if(!k){alert('Guarda tu clave primero');return;}
+  var texto=document.getElementById('escena').value.trim();
+  var fruta=document.getElementById('fruta').value;
+  var btn=document.getElementById('btn');
+  btn.disabled=true;btn.textContent='Generando...';
+  log('=== INICIANDO ===');
+  try{
+    log('Enviando petición...');
+    var prompt=texto+'. Character: '+fruta+' humanized fruit with arms, legs, big expressive eyes. Vertical 9:16, 24fps, cinematic, no text, no watermarks.';
+    var res=await fetch(API+'/videos',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+k,'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,prompt:prompt,image:seed(),num_frames:121,frame_rate:24})
+    });
+    log('HTTP '+res.status);
+    if(!res.ok){var err=await res.text();log('ERROR: '+err.slice(0,200),'err');throw new Error('HTTP '+res.status);}
+    var data=await res.json();
+    log('Respuesta: '+JSON.stringify(data).slice(0,150));
+    var vid=data.video_id||data.id||data.task_id;
+    if(!vid)throw new Error('Sin video_id');
+    log('Tarea: '+vid);
+    var intentos=0;var max=60;var urlFinal=null;
+    while(intentos<max){
+      await sleep(8000);intentos++;
+      var r2=await fetch(POLL+'?video_id='+encodeURIComponent(vid)+'&model_name='+encodeURIComponent(MODEL),{headers:{'Authorization':'Bearer '+k}});
+      var d2=await r2.json();
+      var st=d2.status||'?';var pr=d2.progress||0;
+      log('Intento '+intentos+'/'+max+' — '+st+' '+pr+'%');
+      if(st==='completed'||st==='succeeded'||st==='done'){
+        urlFinal=(d2.metadata&&d2.metadata.url)||d2.url||(d2.output&&d2.output.url);
+        break;
+      }
+      if(st==='failed'||st==='error')throw new Error('Falló: '+JSON.stringify(d2).slice(0,100));
+    }
+    if(!urlFinal)throw new Error('Timeout');
+    log('✅ VIDEO LISTO!');
+    var v=document.createElement('video');v.controls=true;v.muted=true;v.playsInline=true;v.src=urlFinal;
+    document.getElementById('galeria').appendChild(v);
+  }catch(e){
+    log('❌ ERROR: '+e.message,'err');
+    alert('Error: '+e.message);
+  }
+  btn.disabled=false;btn.textContent='🎬 GENERAR VIDEO';
+}
+
+if(getKey()){document.getElementById('clave').value=getKey();document.getElementById('estado').textContent='✅ Clave guardada';document.getElementById('estado').style.color='#34d399';}
+log('Listo. Pega tu clave.');
+</script>
+</body>
+</html>
