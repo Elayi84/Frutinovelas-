@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA PUFF — Vapers Premium</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Arial,sans-serif;background:#faf6f0;color:#3a2f28;line-height:1.5}
+h1,h2,h3{font-family:Georgia,serif}
+.announce{background:#3a2f28;color:#faf6f0;text-align:center;padding:.6rem;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase}
+nav{position:sticky;top:0;z-index:100;background:rgba(250,246,240,.95);border-bottom:1px solid rgba(58,47,40,.08);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:Georgia,serif;font-size:1.4rem;font-weight:700}
+.logo span{color:#c9a961}
+.cart-btn{background:#3a2f28;color:#faf6f0;border:none;padding:.65rem 1.1rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.cart-count{background:#c9a961;color:#3a2f28;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+.hero{padding:5rem 1.5rem 4rem;text-align:center;background:linear-gradient(180deg,#f0e8dc 0%,#faf6f0 100%)}
+.tagline{display:inline-block;background:#fff;color:#c9a961;padding:.5rem 1.2rem;border-radius:100px;font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.5rem;box-shadow:0 4px 20px rgba(58,47,40,.08)}
+.hero h1{font-size:3rem;line-height:1.1;margin-bottom:1.2rem}
+.hero h1 em{font-style:italic;color:#c9a961}
+.hero p{color:#8b7d6f;font-size:1.05rem;max-width:500px;margin:0 auto 2rem}
+.btn-hero{background:#3a2f28;color:#faf6f0;border:none;padding:1rem 2.5rem;border-radius:100px;font-size:.85rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+section{padding:4rem 1.5rem;max-width:1200px;margin:0 auto}
+.section-head{text-align:center;margin-bottom:3rem}
+.eyebrow{color:#c9a961;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;font-weight:600;margin-bottom:.8rem}
+.section-head h2{font-size:2.2rem}
+.section-head p{color:#8b7d6f;margin-top:.8rem}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2rem}
+.product{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(58,47,40,.08);transition:transform .3s;cursor:pointer}
+.product:hover{transform:translateY(-6px)}
+.product-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;padding:1rem;font-size:5rem}
+.product-badge{position:absolute;top:12px;left:12px;background:#c9a961;color:#fff;padding:.3rem .8rem;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.product-info{padding:1.3rem}
+.product-name{font-family:Georgia,serif;font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.product-flavors{font-size:.75rem;color:#8b7d6f;margin-bottom:.8rem;line-height:1.4}
+.product-bottom{display:flex;justify-content:space-between;align-items:center}
+.product-price{font-size:1.3rem;font-weight:700}
+.product-price small{font-size:.7rem;color:#8b7d6f;font-weight:400;display:block}
+.btn-add{background:#3a2f28;color:#faf6f0;border:none;padding:.6rem 1.1rem;border-radius:100px;font-size:.72rem;font-weight:600;cursor:pointer}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;background:#fff;border-radius:24px;padding:3rem 2rem;box-shadow:0 4px 20px rgba(58,47,40,.08)}
+.feature{text-align:center;padding:0 1rem}
+.feature-icon{width:50px;height:50px;margin:0 auto 1rem;background:#f0e8dc;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.feature-title{font-family:Georgia,serif;font-size:1.05rem;margin-bottom:.4rem}
+.feature-desc{color:#8b7d6f;font-size:.82rem;line-height:1.5}
+.cart-modal{position:fixed;inset:0;z-index:200;background:rgba(26,21,18,.5);display:none;align-items:flex-end;justify-content:center}
+.cart-modal.open{display:flex}
+.cart-panel{background:#faf6f0;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:2rem 1.5rem;max-height:85vh;overflow-y:auto}
+.cart-panel h2{font-size:1.6rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}
+.cart-close{background:transparent;border:none;font-size:1.5rem;cursor:pointer;color:#8b7d6f}
+.cart-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(58,47,40,.08);align-items:center}
+.cart-item-img{width:60px;height:60px;background:#f0e8dc;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-name{font-weight:600;font-size:.9rem;margin-bottom:.2rem}
+.cart-item-price{color:#c9a961;font-size:.85rem;font-weight:600}
+.cart-item-remove{background:transparent;border:none;color:#8b7d6f;cursor:pointer;font-size:1.1rem;padding:.3rem}
+.cart-empty{text-align:center;color:#8b7d6f;padding:3rem 0}
+.cart-total{display:flex;justify-content:space-between;padding:1.5rem 0;font-size:1.3rem;font-weight:700;font-family:Georgia,serif}
+.cart-total span:last-child{color:#c9a961}
+.btn-checkout{background:#3a2f28;color:#faf6f0;border:none;padding:1.1rem;border-radius:100px;font-size:.9rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%;margin-top:1rem}
+footer{background:#3a2f28;color:#faf6f0;padding:3rem 1.5rem 2rem;text-align:center;margin-top:3rem}
+footer .logo{font-size:1.5rem;margin-bottom:.8rem}
+footer p{color:rgba(250,246,240,.6);font-size:.8rem;margin-bottom:.5rem}
+footer .tg{display:inline-block;background:#c9a961;color:#3a2f28;padding:.6rem 1.5rem;border-radius:100px;font-size:.78rem;font-weight:600;margin-top:1rem;text-decoration:none}
+footer .copy{margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(250,246,240,.1);font-size:.7rem;color:rgba(250,246,240,.4)}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:#3a2f28;color:#faf6f0;padding:1rem 2rem;border-radius:100px;font-weight:600;font-size:.85rem;z-index:300;opacity:0;transition:all .3s}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media(max-width:600px){.hero h1{font-size:2.2rem}.section-head h2{font-size:1.7rem}.products{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}}
+</style>
+</head>
+<body>
+
+<div class="announce">✦ Envío gratis en pedidos superiores a 50€ ✦</div>
+
+<nav>
+<div class="logo">AURA <span>PUFF</span></div>
+<button class="cart-btn" onclick="toggleCart()">🛒 Carrito <span class="cart-count" id="cartCount">0</span></button>
+</nav>
+
+<div class="hero">
+<div class="tagline">Nueva Colección 2026</div>
+<h1>El arte de <em>vapear</em> con estilo</h1>
+<p>Descubre AURA PUFF — la experiencia premium en vapers. 15 sabores en 1, diseño elegante, calidad inigualable.</p>
+<button class="btn-hero" onclick="document.getElementById('productos').scrollIntoView({behavior:'smooth'})">Ver Productos</button>
+</div>
+
+<section id="productos">
+<div class="section-head">
+<div class="eyebrow">Colección Exclusiva</div>
+<h2>Nuestros Productos</h2>
+<p>FIZZY SMART 150K 15 EN 1 — el vape más avanzado del mercado</p>
+</div>
+<div class="products" id="products"></div>
+</section>
+
+<section>
+<div class="features">
+<div class="feature"><div class="feature-icon">⚡</div><div class="feature-title">150.000 Caladas</div><div class="feature-desc">Duración extrema con batería recargable USB-C</div></div>
+<div class="feature"><div class="feature-icon">✨</div><div class="feature-title">15 Sabores en 1</div><div class="feature-desc">Combina hasta 4 sabores a la vez con Smart Modes</div></div>
+<div class="feature"><div class="feature-icon">🎨</div><div class="feature-title">Pantalla LED</div><div class="feature-desc">Controla tu sabor y batería en tiempo real</div></div>
+<div class="feature"><div class="feature-icon">🚚</div><div class="feature-title">Envío Rápido</div><div class="feature-desc">Recibe tu pedido en 24-48h en toda España</div></div>
+</div>
+</section>
+
+<div class="cart-modal" id="cartModal" onclick="if(event.target===this)toggleCart()">
+<div class="cart-panel">
+<h2>Tu Carrito <button class="cart-close" onclick="toggleCart()">✕</button></h2>
+<div id="cartItems"></div>
+<div class="cart-total"><span>Total</span><span id="cartTotal">0,00 €</span></div>
+<button class="btn-checkout" onclick="checkout()">💬 Pedir por Telegram</button>
+</div>
+</div>
+
+<footer>
+<div class="logo">AURA <span style="color:#c9a961">PUFF</span></div>
+<p>Vapers premium · Producto para mayores de 18 años</p>
+<a href="https://t.me/G84_ST" target="_blank" class="tg">💬 Contactar por Telegram</a>
+<div class="copy">© 2026 AURA PUFF · Todos los derechos reservados</div>
+</footer>
+
+<div class="toast" id="toast">✓ Añadido al carrito</div>
+
+<script>
+var TELEGRAM='G84_ST';
+var PRODUCTOS=[
+{id:1,name:'FIZZY SMART 150K',color:'Ice Blue',emoji:'🧊',bg:'#e8f4f8',flavors:'Arándano · Fresa · Limón · Sandía',price:19.99,badge:'TOP'},
+{id:2,name:'FIZZY SMART 150K',color:'Pink Edition',emoji:'🌸',bg:'#fce8ee',flavors:'Tropical · Sandía · Coco · Fresa',price:19.99,badge:''},
+{id:3,name:'FIZZY SMART 150K',color:'Gold Edition',emoji:'✨',bg:'#faf0d8',flavors:'Blueberry · Sandía · Uva · Maracuyá',price:19.99,badge:'NUEVO'},
+{id:4,name:'FIZZY SMART 150K',color:'Purple Dream',emoji:'💜',bg:'#f0e8f8',flavors:'Love 66 · Fresa Kiwi · Sandía · Frambuesa',price:19.99,badge:''},
+{id:5,name:'FIZZY SMART 150K',color:'Mint Green',emoji:'🌿',bg:'#e8f5e8',flavors:'Fresa · Kiwi · Melocotón · Uva',price:19.99,badge:''},
+{id:6,name:'FIZZY SMART 150K',color:'Classic Collection',emoji:'🎨',bg:'#f5ede0',flavors:'5 colores · 15 sabores distintos',price:19.99,badge:'PACK'},
+{id:7,name:'VApSolo TRIPLE 60000',color:'Black Ice',emoji:'🖤',bg:'#e8e8ec',flavors:'Black Ice · Triple Sabor',price:14.99,badge:''},
+{id:8,name:'FIZZY SMART 150K',color:'Tropical Sunset',emoji:'🌅',bg:'#fce8d8',flavors:'Mango · Maracuyá · Fresa · Coco',price:19.99,badge:''}
+];
+var carrito=[];
+function renderProductos(){
+var h='';
+for(var i=0;i<PRODUCTOS.length;i++){
+var p=PRODUCTOS[i];
+h+='<div class="product"><div class="product-img" style="background:'+p.bg+'">'+(p.badge?'<div class="product-badge">'+p.badge+'</div>':'')+p.emoji+'</div><div class="product-info"><div class="product-name">'+p.name+'</div><div class="product-flavors"><strong>'+p.color+'</strong><br>'+p.flavors+'</div><div class="product-bottom"><div class="product-price">'+p.price.toFixed(2)+' €<small>IVA incluido</small></div><button class="btn-add" onclick="addCart('+p.id+')">Añadir</button></div></div></div>';
+}
+document.getElementById('products').innerHTML=h;
+}
+function addCart(id){
+var p=PRODUCTOS.filter(function(x){return x.id===id;})[0];
+var item=carrito.filter(function(x){return x.id===id;})[0];
+if(item){item.qty++;}else{carrito.push({id:p.id,name:p.name,color:p.color,price:p.price,emoji:p.emoji,qty:1});}
+updateCart();showToast('✓ '+p.name+' añadido');
+}
+function removeCart(id){carrito=carrito.filter(function(x){return x.id!==id;});updateCart();}
+function updateCart(){
+var count=carrito.reduce(function(s,x){return s+x.qty;},0);
+document.getElementById('cartCount').textContent=count;
+var h='';
+if(carrito.length===0){h='<div class="cart-empty">Tu carrito está vacío</div>';}
+else{for(var i=0;i<carrito.length;i++){var it=carrito[i];h+='<div class="cart-item"><div class="cart-item-img">'+it.emoji+'</div><div class="cart-item-info"><div class="cart-item-name">'+it.name+'</div><div class="cart-item-price">'+it.color+' · '+it.qty+' × '+it.price.toFixed(2)+' €</div></div><button class="cart-item-remove" onclick="removeCart('+it.id+')">✕</button></div>';}}
+document.getElementById('cartItems').innerHTML=h;
+var total=carrito.reduce(function(s,x){return s+x.price*x.qty;},0);
+document.getElementById('cartTotal').textContent=total.toFixed(2)+' €';
+}
+function toggleCart(){document.getElementById('cartModal').classList.toggle('open');}
+function checkout(){
+if(carrito.length===0){showToast('⚠ Carrito vacío');return;}
+var msg='🛍️ PEDIDO AURA PUFF%0A%0A';
+var total=0;
+for(var i=0;i<carrito.length;i++){var it=carrito[i];msg+='• '+it.name+' — '+it.color+'%0A';msg+='  '+it.qty+' × '+it.price.toFixed(2)+' € = '+(it.qty*it.price).toFixed(2)+' €%0A%0A';total+=it.qty*it.price;}
+msg+='💰 TOTAL: '+total.toFixed(2)+' €%0A%0APor favor, confírmame el pedido.';
+window.open('https://t.me/'+TELEGRAM+'?text='+msg,'_blank');
+}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
+renderProductos();
+updateCart();
+</script>
+
+</body>
+</html>
